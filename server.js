@@ -31,15 +31,26 @@ const start = function () {
         type: 'list',
         name: 'toDo',
         message: 'What do you want to do?',
-        choices: ["ADD AN EMPLOYEE", "VIEW ALL EMPLOYEES", "UPDATE AN EMPLOYEE'S MANAGER"]
+        choices: ["ADD AN EMPLOYEE", "VIEW ALL EMPLOYEES", "UPDATE AN EMPLOYEE'S MANAGER","EXIT APPLICATION"]
 
-    }]).then(function (user) {
-        if (user.toDo === "ADD AN EMPLOYEE") {
-           addEmployee();
-        } else  if (user.toDO === "VIEW ALL EMPLOYEES") {
-            viewEmployee();
-        } else {
-            updateEmployee();
+    }])
+    .then ((answers) => {
+        switch (answers.action) {
+            case "ADD AN EMPLOYEE":
+                addEmployee();
+                break;
+
+            case "VIEW ALL EMPLOYEES":
+                viewEmployee();
+                break;
+
+            case "UPDATE AN EMPLOYEE'S MANAGER":
+                updateEmployee();
+                break;
+
+            case "EXIT APPLICATION":
+                connection.end();
+                break;
         }
 
     })
@@ -79,7 +90,7 @@ const addEmployee = function() {
 }
 // function for viewing table of employees
 const viewEmployee = function() {
-    
+
 }
 // function for updating employee roles
 const updateEmployee = function () {
