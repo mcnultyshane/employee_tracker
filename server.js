@@ -94,13 +94,45 @@ const viewEmployee = function() {
 }
 // function for updating employee roles
 const updateEmployee = function () {
-    connection.query("SELECT * FROM ?", function (err, res) {
+    connection.query("SELECT * FROM employee", function (err, res) {
         if (err) throw err;
 
         for (let i = 0; i < res.length; i++) {
-         console.log(); res[i];
+         console.log(res[i].d + "Employee: " + res[i].firstName + " " + res[i].lastName +" | Title: " + res[i].role + "\n-----------------"); 
             
         }
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'employPicked',
+                message: 'Please enter the ID number of the employee you would like to update:'
+            },
+            {
+                type: 'list',
+                name: 'newRole',
+                choices: ["Attorney, Engineer, Accountant, Salesperson"]
+            }
+
+        ])
+        .then(function (answer) {
+            let existEmploy;
+            existEmploy = false
+            console.log(answer.employPicked);
+            console.log(answer.newRole);
+
+            for (let i = 0; i < res.length; i++) {
+                if (parseInt(res[i].id) === parseInt(answer.employPicked)) {
+                    existEmploy = true;
+                }
+            }
+            if (!existEmploy) {
+                console.log('******************\nID does not currently exist.  Please try again\n******************');
+                updateEmployee();
+
+            } else {
+                connection.query("UPDATE employee")
+            }
+        })
     })
 }
 
