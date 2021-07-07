@@ -25,7 +25,11 @@ const connection = mysql.createConnection({
 
 
 // ===============================
-// should i prompt for department first?"
+// should i prompt for department first?
+// In View Table function: error Table 'employee_db.employee' does not exist but it does and they I am connected.
+// ^^^ this same error for add employee function also. 
+// connection.end does not work in function
+
 // lines 86 finish for the add employee: what am i adding.
 // lines 139 finish for update employee
 // apply a manager to employee
@@ -49,7 +53,7 @@ const start = function () {
             } else if (answer.toDo === "UPDATE AN EMPLOYEE'S MANAGER") {
                 updateEmployee();
             } else {
-                connection.end;
+                connection.end();
             }
             
             // switch (answer.action) {
