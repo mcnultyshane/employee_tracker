@@ -56,6 +56,11 @@ const start = function () {
     })
 };
 
+// ===============================
+// should i prompt for department first?"
+// ===============================
+
+
 // function for adding employees
 const addEmployee = function() {
     inquirer.prompt([
@@ -90,6 +95,7 @@ const addEmployee = function() {
 }
 // function for viewing table of employees
 const viewEmployee = function() {
+    
 
 }
 // function for updating employee roles
