@@ -41,27 +41,39 @@ const start = function () {
 
         }])
         .then((answer) => {
-            switch (answer.action) {
-                case "ADD AN EMPLOYEE":
-                    addEmployee();
-                    break;
+            if (answer.toDo === "ADD AN EMPLOYEE") {
+                addEmployee();
+            } else if (answer.toDo === "VIEW ALL EMPLOYEES") {
+                viewEmployee();
 
-                case "VIEW ALL EMPLOYEES":
-                    viewEmployee();
-                    break;
-
-                case "UPDATE AN EMPLOYEE'S MANAGER":
-                    updateEmployee();
-                    break;
-
-                case "EXIT APPLICATION":
-                    connection.end();
-                    break;
-                
-                default :
-                    console.log(`Invalid action: ${answer.action}`);
-                    break;
+            } else if (answer.toDo === "UPDATE AN EMPLOYEE'S MANAGER") {
+                updateEmployee();
+            } else {
+                connection.end;
             }
+            
+            // switch (answer.action) {
+            //     case "ADD AN EMPLOYEE":
+            //         addEmployee();
+            //         break;
+
+            //     case "VIEW ALL EMPLOYEES":
+            //         viewEmployee();
+            //         break;
+
+            //     case "UPDATE AN EMPLOYEE'S MANAGER":
+            //         updateEmployee();
+            //         break;
+
+            //     case "EXIT APPLICATION":
+            //         connection.end();
+            //         break;
+                
+            //     default :
+            //         console.log(answer.toDo);
+            //         console.log(`Invalid action: ${answer.action}`);
+            //         break;
+            // }
         });
 };
 // // function for adding employees
@@ -175,7 +187,7 @@ function employeeInfo(firstName, lastName, department, role) {
 connection.connect((err) => {
     if (err) throw (err);
     console.log(`connected as id: ${connection.threadId}`);
+    start();
 
 })
 
-start()
