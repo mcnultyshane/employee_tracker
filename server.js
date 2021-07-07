@@ -40,8 +40,8 @@ const start = function () {
             choices: ["ADD AN EMPLOYEE", "VIEW ALL EMPLOYEES", "UPDATE AN EMPLOYEE'S MANAGER", "EXIT APPLICATION"]
 
         }])
-        .then((answers) => {
-            switch (answers.action) {
+        .then((answer) => {
+            switch (answer.action) {
                 case "ADD AN EMPLOYEE":
                     addEmployee();
                     break;
@@ -57,9 +57,12 @@ const start = function () {
                 case "EXIT APPLICATION":
                     connection.end();
                     break;
+                
+                default :
+                    console.log(`Invalid action: ${answer.action}`);
+                    break;
             }
-
-        })
+        });
 };
 // // function for adding employees
 const addEmployee = function () {
@@ -87,7 +90,8 @@ const addEmployee = function () {
 
         connection.query("INSERT INTO employee SET ?", newEmployee, function (err, res) {
             if (err) throw err
-            console.log("Your new employee has been added. ");
+            console.log("Your new employee has been added.");
+            start();
         });
         connection.end
     })
@@ -174,4 +178,4 @@ connection.connect((err) => {
 
 })
 
-// start()
+start()
