@@ -1,9 +1,8 @@
-const PasswordPrompt = require('inquirer/lib/prompts/password');
+
 const mysql = require('mysql');
-const express = require('express');
+const seeTable = require('console.table')
 const inquirer = require('inquirer');
-const Choice = require('inquirer/lib/objects/choice');
-const Choices = require('inquirer/lib/objects/choices');
+
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -13,7 +12,12 @@ const connection = mysql.createConnection({
     password: 'October31',
     database: 'employee_db'
 });
+connection.connect((err) => {
+    if (err) throw (err);
+    console.log(`connected as id: ${connection.threadId}`);
+    start();
 
+})
 
 // Password and username login
 // --------------------------------
@@ -28,7 +32,6 @@ const connection = mysql.createConnection({
 // should i prompt for department first?
 // In View Table function: error Table 'employee_db.employee' does not exist but it does and they I am connected.
 // ^^^ this same error for add employee function also. 
-// connection.end does not work in function
 
 // lines 86 finish for the add employee: what am i adding.
 // lines 139 finish for update employee
@@ -37,50 +40,57 @@ const connection = mysql.createConnection({
 
 const start = function () {
     // console.log("Welcome to the Employee Manager");
-    inquirer.prompt([{
+    inquirer.prompt([
+        {
             type: 'list',
             name: 'toDo',
             message: 'What do you want to do?',
-            choices: ["ADD AN EMPLOYEE", "VIEW ALL EMPLOYEES", "UPDATE AN EMPLOYEE'S MANAGER", "EXIT APPLICATION"]
+            choices: [
+                "ADD AN EMPLOYEE", 
+                "VIEW ALL EMPLOYEES", 
+                "UPDATE AN EMPLOYEE", 
+                "EXIT APPLICATION"
+            ]
+        }
+    ]).then((answer) => {
+            // if (answer.toDo === "ADD AN EMPLOYEE") {
+            //     addEmployee();
+            // } else if (answer.toDo === "VIEW ALL EMPLOYEES") {
+            //     viewEmployee();
 
-        }])
-        .then((answer) => {
-            if (answer.toDo === "ADD AN EMPLOYEE") {
-                addEmployee();
-            } else if (answer.toDo === "VIEW ALL EMPLOYEES") {
-                viewEmployee();
-
-            } else if (answer.toDo === "UPDATE AN EMPLOYEE'S MANAGER") {
-                updateEmployee();
-            } else {
-                connection.end();
-            }
-            
-            // switch (answer.action) {
-            //     case "ADD AN EMPLOYEE":
-            //         addEmployee();
-            //         break;
-
-            //     case "VIEW ALL EMPLOYEES":
-            //         viewEmployee();
-            //         break;
-
-            //     case "UPDATE AN EMPLOYEE'S MANAGER":
-            //         updateEmployee();
-            //         break;
-
-            //     case "EXIT APPLICATION":
-            //         connection.end();
-            //         break;
-                
-            //     default :
-            //         console.log(answer.toDo);
-            //         console.log(`Invalid action: ${answer.action}`);
-            //         break;
+            // } else if (answer.toDo === "UPDATE AN EMPLOYEE'S MANAGER") {
+            //     updateEmployee();
+            // } else {
+            //     connection.end();
             // }
+            
+            switch (answer.toDo) {
+                case "ADD AN EMPLOYEE":
+                    addEmployee();
+                    break;
+
+                case "VIEW ALL EMPLOYEES":
+                    viewEmployee();
+                    break;
+
+                case "UPDATE AN EMPLOYEE'S MANAGER":
+                    updateEmployee();
+                    break;
+
+                case "EXIT APPLICATION":
+                    connection.end();
+                    break;
+                
+                default :
+                    console.log(answer.toDo);
+                    console.log(`Invalid action: ${answer.action}`);
+                    break;
+            }
         });
 };
 // // function for adding employees
+
+
 const addEmployee = function () {
     inquirer.prompt([{
             type: "input",
@@ -114,84 +124,90 @@ const addEmployee = function () {
 }
 // // function for viewing table of employees
 const viewEmployee = function () {
-    connection.query("SELECT first_name, last_name, title, department, salary FROM employee AS maintable INNER JOIN jobrole AS o ON maintable.role_id = o.id INNER JOIN department AS ot ON o.department_id = ot.id", (err, res) => {
+    // first_name, last_name, title, department, salary FROM employee AS maintable INNER JOIN jobrole AS o ON maintable.role_id = o.id INNER JOIN department AS ot ON o.department_id = ot.id"
+
+    connection.query("SELECT employee.first_name, employee.last_name, jobrole.title AS Title FROM employee JOIN jobrole ON employee.role_id = jobrole.id;", (err, res) => {
         if (err) throw err;
         console.table(res);
         connection.end;
         start();
     })
 }
+// Selecting Role title for add employee 
+var roleArr = [];
+function selectRole(){
+    connection.query("SELECT * FROM role", function(err, res){
+        if (err) throw err
+        for (let i = 0; i < res.length; i++) {
+            roleArr.push(res[i].title) ;
+            
+        }
+    })
+    return roleArr;
+}
+// Selecting manager for adding to employee
+var mgmtArray = [];
+function selectMgmt() {
+    connection.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", function(err, res){
+        if (err) throw err
+        for (let i = 0; i < res.length; i++) {
+            mgmtArray.push(res[i].first_name) ;    
+        }
+    })
+    return mgmtArray;
+}
 // // function for updating employee roles
 const updateEmployee = function () {
-    connection.query("SELECT * FROM employee FROM employee AS maintable INNER JOIN jobrole AS o ON maintable.role_id = o.id INNER JOIN department AS ot ON o.department_id = ot.id ", function (err, res) {
+    connection.query("SELECT employee.id employee.last_name, jobrole.title FROM employee JOIN jobrole ON employee.role_id = jobrole.id;", function (err, res) {
         if (err) throw err;
-
-        for (let i = 0; i < res.length; i++) {
-            console.log(res[i].d + "Employee: " + res[i].firstName + " " + res[i].lastName + " | Title: " + res[i].role + "\n-----------------");
-
-        }
+        
+        // for (let i = 0; i < res.length; i++) {
+        //     console.log(res[i].id + "Employee: " + res[i].first_name + " " + res[i].last_name + " | Title: " + res[i].role + "\n-----------------");
+        // }
         inquirer.prompt([{
-                type: 'input',
+                type: 'rawlist',
                 name: 'employPicked',
-                message: 'Please enter the ID number of the employee you would like to update:'
+                message: 'Please enter the ID number of the employee you would like to update:',
+                choices: function () {
+                    let pickedID = [];
+                    for (let i = 0; i < res.length; i++) {
+                        pickedID.push(res[1].id);
+                    }
+                    return pickedID;
+                }
             },
             {
                 type: 'list',
                 name: 'newRole',
-                choices: ["Attorney, Engineer, Accountant, Salesperson"]
+                message: "What is the Employee's new title?",
+                choices: selectRole()
+            },
+            {
+                type: "rawlist",
+                name: "mgmtChoice",
+                message: "What is their manager's name?",
+                choices: selectMgmt()
             }
-
         ])
         .then(function (answer) {
-            let existEmploy;
-            existEmploy = false
-            console.log(answer.employPicked);
-            console.log(answer.newRole);
-
-            for (let i = 0; i < res.length; i++) {
-                if (parseInt(res[i].id) === parseInt(answer.employPicked)) {
-                    existEmploy = true;
-                }
-            }
-            if (!existEmploy) {
-                console.log('******************\nID does not currently exist.  Please try again\n******************');
-                updateEmployee();
-
-            } else {
-                console.log('Updating Employee...');
-                const query = connection.query('UPDATE title SET ? WHERE ?',
-                    [{
-                            id: answer.employPicked,
-                        },
-                        {
-                            title: answer.newRole
-                        },
-                    ],
-                    (err, res) => {
-                        if (err) throw err;
-                        console.log('Employee Updated.');
-                        start();
-                    }
-                )
-            }
+            let mgmtId = selectMgmt().indexOf(answer.jobrole) + 1
+            connection.query("UPDATE employee SET WHERE ?",
+            {
+                last_name: answer.id
+            })
         })
     })
 }
 
-function employeeInfo(firstName, lastName, department, role) {
-    if (!(this instanceof employeeInfo)) {
-        return new employeeInfo(firstName, lastName, department, role);
-    }
-    this.firstName = firstName
-    this.lastName = lastName
-    this.department = department
-    this.role = role
-}
+// function employeeInfo(firstName, lastName, department, role) {
+//     if (!(this instanceof employeeInfo)) {
+//         return new employeeInfo(firstName, lastName, department, role);
+//     }
+//     this.firstName = firstName
+//     this.lastName = lastName
+//     this.department = department
+//     this.role = role
+// }
 
-connection.connect((err) => {
-    if (err) throw (err);
-    console.log(`connected as id: ${connection.threadId}`);
-    start();
 
-})
 
