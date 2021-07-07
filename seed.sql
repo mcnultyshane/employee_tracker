@@ -39,11 +39,7 @@ VALUES ("Director of Sales", 250000, 1), ("Sales Person", 125000, 1), ("Director
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Courtney", "Collins", 1, null), ("Tomas", "Baker", 2, 1), ("Linda", "Brene" 3, null), ("Julio", "Ortiz", 4, 3), ("Tali" "Parker", 4, 3), ("Dylan", "Bryce", 5, 3), ("Danny", "Brown", 6, null), ("Minaj", "Patel", 7, 6), ("Kevin", "Lewis", 8, null), ("Olive", "Stills", 9, 8);
--- SELECT first_name, last_name, title, department, salary FROM employee AS maintable
--- INNER JOIN jobrole AS o
--- ON maintable.role_id = o.id
--- INNER JOIN department AS ot
--- ON o.department_id = ot.id;
+
 
 -- SELECT employee.first_name, employee.last_name, jobrole.title AS Title 
 -- FROM employee 
