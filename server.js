@@ -27,6 +27,8 @@ const connection = mysql.createConnection({
 // ===============================
 // should i prompt for department first?"
 // lines 86 finish for the add employee: what am i adding.
+// lines 139 finish for update employee
+// apply a manager to employee
 // ===============================
 
 const start = function () {
@@ -93,15 +95,15 @@ const addEmployee = function () {
 // // function for viewing table of employees
 const viewEmployee = function () {
     connection.query("SELECT first_name, last_name, title, department, salary FROM employee AS maintable INNER JOIN jobrole AS o ON maintable.role_id = o.id INNER JOIN department AS ot ON o.department_id = ot.id", (err, res) => {
-        if (err) throw err; 
-        console.table(res); 
+        if (err) throw err;
+        console.table(res);
         connection.end;
         start();
     })
 }
 // // function for updating employee roles
 const updateEmployee = function () {
-    connection.query("SELECT * FROM employee", function (err, res) {
+    connection.query("SELECT * FROM employee FROM employee AS maintable INNER JOIN jobrole AS o ON maintable.role_id = o.id INNER JOIN department AS ot ON o.department_id = ot.id ", function (err, res) {
         if (err) throw err;
 
         for (let i = 0; i < res.length; i++) {
@@ -109,36 +111,50 @@ const updateEmployee = function () {
 
         }
         inquirer.prompt([{
-                    type: 'input',
-                    name: 'employPicked',
-                    message: 'Please enter the ID number of the employee you would like to update:'
-                },
-                {
-                    type: 'list',
-                    name: 'newRole',
-                    choices: ["Attorney, Engineer, Accountant, Salesperson"]
+                type: 'input',
+                name: 'employPicked',
+                message: 'Please enter the ID number of the employee you would like to update:'
+            },
+            {
+                type: 'list',
+                name: 'newRole',
+                choices: ["Attorney, Engineer, Accountant, Salesperson"]
+            }
+
+        ])
+        .then(function (answer) {
+            let existEmploy;
+            existEmploy = false
+            console.log(answer.employPicked);
+            console.log(answer.newRole);
+
+            for (let i = 0; i < res.length; i++) {
+                if (parseInt(res[i].id) === parseInt(answer.employPicked)) {
+                    existEmploy = true;
                 }
+            }
+            if (!existEmploy) {
+                console.log('******************\nID does not currently exist.  Please try again\n******************');
+                updateEmployee();
 
-            ])
-            .then(function (answer) {
-                let existEmploy;
-                existEmploy = false
-                console.log(answer.employPicked);
-                console.log(answer.newRole);
-
-                for (let i = 0; i < res.length; i++) {
-                    if (parseInt(res[i].id) === parseInt(answer.employPicked)) {
-                        existEmploy = true;
+            } else {
+                console.log('Updating Employee...');
+                const query = connection.query('UPDATE title SET ? WHERE ?',
+                    [{
+                            id: answer.employPicked,
+                        },
+                        {
+                            title: answer.newRole
+                        },
+                    ],
+                    (err, res) => {
+                        if (err) throw err;
+                        console.log('Employee Updated.');
+                        start();
                     }
-                }
-                if (!existEmploy) {
-                    console.log('******************\nID does not currently exist.  Please try again\n******************');
-                    updateEmployee();
-
-                } else {
-                    connection.query("UPDATE employee")
-                }
-            })
+                )
+            }
+        })
     })
 }
 
