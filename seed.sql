@@ -26,8 +26,9 @@ CREATE TABLE employee (
     role_id INTEGER(10) NOT NULL,
     manager_id INTEGER(10),
     PRIMARY KEY (id),
-    FOREIGN KEY (role_id) REFERENCES jobrole (id),
-    FOREIGN KEY (manager_id) REFERENCES department(id)
+    FOREIGN KEY (role_id) REFERENCES jobrole (id)
+    -- ,
+    -- FOREIGN KEY (manager_id) REFERENCES department(id)
 );
 
 INSERT INTO department (department)
@@ -37,7 +38,7 @@ INSERT INTO jobrole (title, salary, department_id)
 VALUES ("Director of Sales", 250000, 1), ("Sales Person", 125000, 1), ("Director of Engineering", 250000, 2), ("Software Engineer", 125000, 2), ("Software Developer", 90000, 2), ("Director of Legal", 250000, 3), ("Attorney", 175000, 3),   ("Director of Accounting", 250000, 4), ("Accountant", 85000, 4);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Courtney", "Collins", 1, null), ("Tomas", "Baker"), ("Linda", "Brene"), ("Julio", "Ortiz"), ("Tali", "Parker"), ("Dylan", "Bryce"), ("Danny", "Brown"), ("Minaj", "Patel"), ("Kevin", "Lewis"), ("Olive", "Stills");
+VALUES ("Courtney", "Collins", 1, null), ("Tomas", "Baker", 2, 1), ("Linda", "Brene" 3, null), ("Julio", "Ortiz", 4, 3), ("Tali" "Parker", 4, 3), ("Dylan", "Bryce", 5, 3), ("Danny", "Brown", 6, null), ("Minaj", "Patel", 7, 6), ("Kevin", "Lewis", 8, null), ("Olive", "Stills", 9, 8);
 -- SELECT first_name, last_name, title, department, salary FROM employee AS maintable
 -- INNER JOIN jobrole AS o
 -- ON maintable.role_id = o.id
@@ -49,4 +50,4 @@ VALUES ("Courtney", "Collins", 1, null), ("Tomas", "Baker"), ("Linda", "Brene"),
 -- JOIN jobrole 
 -- ON employee.role_id = jobrole.id
 
-SELECT employee.last_name, jobrole.title FROM employee JOIN jobrole ON employee.role_id = jobrole.id;
+-- SELECT employee.last_name, jobrole.title FROM employee JOIN jobrole ON employee.role_id = jobrole.id;
