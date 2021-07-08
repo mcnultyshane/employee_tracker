@@ -15,10 +15,13 @@ This project was to design a CMS that an employer could use to track their emplo
 
 ## Installation 
 
-To Begin using this application, you must first seed your MySQL data using the seed.sql file.  Then in your terminal run 'npm install' to install all the dependencies and the run 'node server.js' or 'npm start.'
+To Begin using this application, you must first seed your MySQL data using the seed.sql file.  Then in your terminal run 'npm install' to install all the dependencies. 
   
 ## Usage 
 
+To use this file run 'node server.js' or 'npm start' in the terminal and answer the prompted questions.  
+
+A walk though video of the application and be viewed here: [Walkthough Video](https://drive.google.com/file/d/1dMq8qUCbrRKpOvZCRbkoxkQEWFoBsRtp/view)
 
 ## Guidelines
 

@@ -3,7 +3,7 @@ const {
     printTable
 } = require('console-table-printer');
 const inquirer = require('inquirer');
-require('dotenv').config
+// require('dotenv').config
 
 
 
@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
     port: '3306',
     user: 'root',
     // add password protection.
-    password: process.env.DB_PASS,
+    password: 'October31',
     database: 'employee_db'
 });
 // connection to server and beginning the start function to initiate the prompts
