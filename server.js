@@ -35,10 +35,10 @@ const start = function () {
     inquirer.prompt([{
         type: 'list',
         name: 'toDo',
-        message: 'What do you want to do?',
+        message: 'Employee Tracker Main Menu:\nWhat would you want to do?',
         choices: [
             "ADD an Employee",
-            "VIEW all Employees, Roles OR Departments",
+            "VIEW ALL Employees, Roles OR Departments",
             "UPDATE an Employee",
             "ADD a Department",
             "EXIT Application"
@@ -50,7 +50,7 @@ const start = function () {
                 addEmployee();
                 break;
 
-            case "VIEW all Employees, Roles OR Departments":
+            case "VIEW ALL Employees, Roles OR Departments":
                 viewAllInfo();
                 break;
 
@@ -151,15 +151,16 @@ const viewEmployee = function () {
 
     connection.query("SELECT employee.id, employee.first_name, employee.last_name, jobrole.title, jobrole.salary FROM employee JOIN jobrole ON employee.role_id = jobrole.id;", (err, res) => {
         if (err) throw err;
+        console.log('\n\n ** Full Employee list ** \n');
         printTable(res);
-        start();
+        console.log('\n\n');
     })
 }
 
 // function for displaying all Employees for choosing.
 function displayAllEmployees() {
-    let query = "SELECT * FROM employee ";
-    connection.query(query, (err, res) => {
+    // let query = "SELECT * FROM employee";
+    connection.query("SELECT * FROM employee", (err, res) => {
         if (err) throw err;
 
         console.log("\n\n ** Full Employee list ** \n");
@@ -167,9 +168,9 @@ function displayAllEmployees() {
     });
 };
 
-function displayAlldDept() {
-    let query = "SELECT * FROM department";
-    connection.query(query, (err, res) => {
+function displayAlldept() {
+    // let query = "SELECT * FROM department";
+    connection.query("SELECT * FROM department", (err, res) => {
         if (err) throw err;
 
         console.log("\n\n ** Full Department list ** \n");
@@ -178,8 +179,8 @@ function displayAlldDept() {
 };
 // function to display all of the job roles in a table for choosing
 function displayAllRoles() {
-    let query = "SELECT * FROM jobrole ";
-    connection.query(query, (err, res) => {
+    // let query = "SELECT * FROM jobrole";
+    connection.query("SELECT * FROM jobrole", (err, res) => {
         if (err) throw err;
 
         console.log("\n\n ** Full Role list ** \n");
@@ -226,6 +227,7 @@ const updateEmployee = function () {
 };
 
 function addDepartment() {
+    displayAlldDept();
     inquirer.prompt({
             type: "input",
             name: "departName",
@@ -252,7 +254,8 @@ function viewAllInfo() {
         type: 'list',
         name: "tableNames",
         message: "Would you like to view all Employees, Departments or Roles?",
-        choices: [{
+        choices: [
+            {
                 name: "Employees",
                 value: "employees",
             },
@@ -267,22 +270,21 @@ function viewAllInfo() {
             },
            
         ],
-    }).then(function (answer) {
-        console.log(`Selecting all from ${answer.tableNames}`);
+    }).then(function (answers) {
+        console.log(`\n Selecting all from ${answers.tableNames}\n`)
 
-        switch (answer.table) {
+        switch (answers.tableNames) {
             case "employees":
-                displayAllEmployees();
+                viewEmployee();
                 break;
 
             case "department":
-                displayAlldDept();
+                displayAlldept();
                 break;
 
             case "roles":
                 displayAllRoles();
                 break
-
 
         }
         start();
