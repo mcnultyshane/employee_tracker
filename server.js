@@ -37,32 +37,32 @@ const start = function () {
         name: 'toDo',
         message: 'What do you want to do?',
         choices: [
-            "ADD AN EMPLOYEE",
-            "VIEW ALL EMPLOYEES",
-            "UPDATE AN EMPLOYEE",
-            "ADD A DEPARTMENT",
-            "EXIT APPLICATION"
+            "ADD an Employee",
+            "VIEW all Employees, Roles OR Departments",
+            "UPDATE an Employee",
+            "ADD a Department",
+            "EXIT Application"
         ]
     }]).then((answer) => {
 
         switch (answer.toDo) {
-            case "ADD AN EMPLOYEE":
+            case "ADD an Employee":
                 addEmployee();
                 break;
 
-            case "VIEW ALL EMPLOYEES":
-                viewEmployee();
+            case "VIEW all Employees, Roles OR Departments":
+                viewAllInfo();
                 break;
 
-            case "UPDATE AN EMPLOYEE":
+            case "UPDATE an Employee":
                 updateEmployee();
                 break;
 
-            case "ADD A DEPARTMENT":
+            case "ADD a Department":
                 addDepartment();
                 break;
 
-            case "EXIT APPLICATION":
+            case "EXIT Application":
                 connection.end();
                 break;
 
@@ -167,6 +167,15 @@ function displayAllEmployees() {
     });
 };
 
+function displayAlldDept() {
+    let query = "SELECT * FROM department";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+
+        console.log("\n\n ** Full Department list ** \n");
+        printTable(res);
+    });
+};
 // function to display all of the job roles in a table for choosing
 function displayAllRoles() {
     let query = "SELECT * FROM jobrole ";
@@ -236,4 +245,47 @@ function addDepartment() {
                 }
             )
         })
+};
+
+function viewAllInfo() {
+    inquirer.prompt({
+        type: 'list',
+        name: "tableNames",
+        message: "Would you like to view all Employees, Departments or Roles?",
+        choices: [{
+                name: "Employees",
+                value: "employees",
+            },
+            {
+                name: "Departments",
+                value: "department"
+
+            },
+            {
+                name: "Roles",
+                value: "roles",
+            },
+           
+        ],
+    }).then(function (answer) {
+        console.log(`Selecting all from ${answer.tableNames}`);
+
+        switch (answer.table) {
+            case "employees":
+                displayAllEmployees();
+                break;
+
+            case "department":
+                displayAlldDept();
+                break;
+
+            case "roles":
+                displayAllRoles();
+                break
+
+
+        }
+        start();
+
+    });
 }
