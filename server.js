@@ -167,7 +167,7 @@ function displayAllEmployees() {
         printTable(res);
     });
 };
-
+// function for viewing all departments
 function displayAlldept() {
     // let query = "SELECT * FROM department";
     connection.query("SELECT * FROM department", (err, res) => {
@@ -225,9 +225,9 @@ const updateEmployee = function () {
                 })
         })
 };
-
+// function for adding departments
 function addDepartment() {
-    displayAlldDept();
+    displayAlldept();
     inquirer.prompt({
             type: "input",
             name: "departName",
@@ -248,7 +248,7 @@ function addDepartment() {
             )
         })
 };
-
+// function for viewing all data
 function viewAllInfo() {
     inquirer.prompt({
         type: 'list',

@@ -21,7 +21,7 @@ To Begin using this application, you must first seed your MySQL data using the s
 
 To use this file run 'node server.js' or 'npm start' in the terminal and answer the prompted questions.  
 
-A walk though video of the application and be viewed here: [Walkthough Video](https://drive.google.com/file/d/1dMq8qUCbrRKpOvZCRbkoxkQEWFoBsRtp/view)
+A walk though video of the application and be viewed here: [Walkthough Video](https://drive.google.com/file/d/1xS7qtVoZbxukUfNJ7Xqgr_ZvzpUqU6KT/view)
 
 ## Guidelines
 
