@@ -20,6 +20,7 @@
   "dependencies": {
     "console-table-printer": "^2.9.0",
     "console.table": "^0.10.0",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "inquirer": "^8.1.1",
     "mysql": "^2.18.1",

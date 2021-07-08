@@ -3,10 +3,8 @@ const {
     printTable
 } = require('console-table-printer');
 const inquirer = require('inquirer');
-const {
-    fetchAsyncQuestionPropertyQuestionProperty
-} = require('inquirer/lib/utils/utils');
-const e = require('express');
+require('dotenv').config
+
 
 
 const connection = mysql.createConnection({
@@ -14,34 +12,26 @@ const connection = mysql.createConnection({
     port: '3306',
     user: 'root',
     // add password protection.
-    password: 'October31',
+    password: process.env.DB_PASS,
     database: 'employee_db'
 });
+// connection to server and beginning the start function to initiate the prompts
 connection.connect((err) => {
     if (err) throw (err);
     console.log(`connected as id: ${connection.threadId}`);
     start();
-
 })
 
 // Password and username login
 // --------------------------------
-// What would you like to do questions
-// add employee
-// view all employees
-// update employee roles
+// ********What would you like to do questions
+// ************add employee
+// ************view all employees
+// ************update employee roles
 // remove employees
 
 
-// ===============================
-
-// add employee inquirer drops out
-// update employee
-
-// ===============================
-
 const start = function () {
-    // console.log("Welcome to the Employee Manager");
     inquirer.prompt([{
         type: 'list',
         name: 'toDo',
@@ -86,14 +76,12 @@ function selectRole() {
         if (err) throw err
         for (let i = 0; i < res.length; i++) {
             roleArr.push(res[i].title);
-
         }
     })
     return roleArr;
 }
 // Selecting manager for adding to employee
 let mgmtArray = [];
-
 function selectMgmt() {
     connection.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", function (err, res) {
         if (err) throw err
@@ -128,10 +116,11 @@ const addEmployee = function () {
             choices: selectMgmt()
         }
     ]).then(function (user) {
-        console.log(user.firstName);
-        console.log(user.lastName);
-        console.log(user.title);
-        console.log(user.choice);
+        console.log("Entering New Employee: ");
+        console.log(user.firstName + " " + user.lastName + ", " + user.title + ", " + user.choice + "\n");
+        // console.log(user.lastName);
+        // console.log(user.title);
+        // console.log(user.choice);
 
         let roleID = selectRole().indexOf(user.title) + 1;
         let mgmtID = selectMgmt().indexOf(user.choice) + 1;
@@ -160,6 +149,7 @@ const viewEmployee = function () {
     })
 }
 
+// function for displaying all Employees for choosing.
 function displayAllEmployees() {
     let query = "SELECT * FROM employee ";
     connection.query(query, (err, res) => {
@@ -170,6 +160,7 @@ function displayAllEmployees() {
     });
 };
 
+// function to display all of the job roles in a table for choosing
 function displayAllRoles() {
     let query = "SELECT * FROM jobrole ";
     connection.query(query, (err, res) => {
@@ -215,60 +206,6 @@ const updateEmployee = function () {
 
                         })
                 })
-
-            // let lastNamePick = [];
-            // connection.query("SELECT employee.id, employee.first_name, employee.last_name, jobrole.title FROM employee JOIN jobrole ON employee.role_id = jobrole.id", function (err, res) {
-            //     if (err) throw err;
-
-            //     // for (let i = 0; i < res.length; i++) {
-            //     //     console.log(res[i].id + "Employee: " + res[i].first_name + " " + res[i].last_name + " | Title: " + res[i].role + "\n-----------------");
-            //     // }
-            //     inquirer.prompt([{
-            //                 type: 'rawlist',
-            //                 name: 'employPicked',
-            //                 message: 'Please enter the ID number of the employee you would like to update:',
-            //                 choices: function () {
-
-            //                     for (let i = 0; i < res.length; i++) {
-            //                         // console.log(res[i]);
-            //                         pickedName.push(res[i].first_name + " " + res[i].last_name);
-            //                         // lastNamePick.push(res[i].last_name);
-            //                     }
-            //                     return pickedName;
-
-            //                 }
-            //             },
-            //             {
-            //                 type: 'list',
-            //                 name: 'newRole',
-            //                 message: "What is the employee's new title?",
-            //                 choices: selectRole()
-            //             }
-            //             // ,
-            //             // {
-            //             //     type: "rawlist",
-            //             //     name: "mgmtChoice",
-            //             //     message: "What is their manager's name?",
-            //             //     choices: selectMgmt()
-            //             // }
-            //         ])
-            //         .then(function (answer) {
-            //             console.log(answer.employPicked);
-            //             console.log(answer.newRole);
-            //             // console.log(answer.mgmtChoice);
-            //             // let mgmtId = selectMgmt().indexOf(answer.employPicked) + 1
-            //             // console.log(mgmtID);
-            //             connection.query("UPDATE employee SET ? WHERE ? ", {
-            //                     role_id: answer.newRole
-            //                 }, {
-            //                     last_name: answer.employPicked
-            //                 },
-            //                 function (err) {
-            //                     if (err) throw err
-            //                     printTable(answer)
-            //                     start()
-            //                 })
-            //         });
-            // });
         })
-}
+};
+

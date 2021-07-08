@@ -2,6 +2,9 @@
 
 ## Description
 
+This project was to design a CMS that an employer could use to track their employees and manage their company more effectively.  This application is built using Node.js, MySQL and Inquirer.
+
+
 
 ### Table of Contents
 
@@ -12,11 +15,9 @@
 
 ## Installation 
 
-No installation necessary to run the application.  Simply visit the deployed link to run the program.  
+To Begin using this application, you must first seed your MySQL data using the seed.sql file.  Then in your terminal run 'npm install' to install all the dependencies and the run 'node server.js' or 'npm start.'
   
 ## Usage 
-
-
 
 
 ## Guidelines
