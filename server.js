@@ -1,7 +1,12 @@
 const mysql = require('mysql');
-const { printTable } = require('console-table-printer');
+const {
+    printTable
+} = require('console-table-printer');
 const inquirer = require('inquirer');
-const { fetchAsyncQuestionPropertyQuestionProperty } = require('inquirer/lib/utils/utils');
+const {
+    fetchAsyncQuestionPropertyQuestionProperty
+} = require('inquirer/lib/utils/utils');
+const e = require('express');
 
 
 const connection = mysql.createConnection({
@@ -63,7 +68,7 @@ const start = function () {
                 break;
 
             case "EXIT APPLICATION":
-                connection.end;
+                connection.end();
                 break;
 
             default:
@@ -88,6 +93,7 @@ function selectRole() {
 }
 // Selecting manager for adding to employee
 let mgmtArray = [];
+
 function selectMgmt() {
     connection.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", function (err, res) {
         if (err) throw err
@@ -147,75 +153,122 @@ const addEmployee = function () {
 // // function for viewing table of employees
 const viewEmployee = function () {
 
-    connection.query("SELECT employee.id, employee.first_name, employee.last_name, jobrole.title AS Title FROM employee JOIN jobrole ON employee.role_id = jobrole.id;", (err, res) => {
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, jobrole.title, jobrole.salary FROM employee JOIN jobrole ON employee.role_id = jobrole.id;", (err, res) => {
         if (err) throw err;
         printTable(res);
-        connection.end();
         start();
     })
 }
 
-// // function for updating employee roles
-const updateEmployee = function () {
-    connection.query("SELECT employee.id, employee.first_name, employee.last_name, jobrole.title FROM employee JOIN jobrole ON employee.role_id = jobrole.id", function (err, res) {
+function displayAllEmployees() {
+    let query = "SELECT * FROM employee ";
+    connection.query(query, (err, res) => {
         if (err) throw err;
 
-        // for (let i = 0; i < res.length; i++) {
-        //     console.log(res[i].id + "Employee: " + res[i].first_name + " " + res[i].last_name + " | Title: " + res[i].role + "\n-----------------");
-        // }
-        inquirer.prompt([{
-                    type: 'rawlist',
-                    name: 'employPicked',
-                    message: 'Please enter the ID number of the employee you would like to update:',
-                    choices: function () {
-                        let pickedID = [];
-                        for (let i = 0; i < res.length; i++) {
-                            // console.log(res[i]);
-                            pickedID.push(res[i].first_name + " " + res[i].last_name);
-                        }
-                        return pickedID;
-                    }
-                },
-                {
-                    type: 'list',
-                    name: 'newRole',
-                    message: "What is the employee's new title?",
-                    choices: selectRole()
-                },
-                {
-                    type: "rawlist",
-                    name: "mgmtChoice",
-                    message: "What is their manager's name?",
-                    choices: selectMgmt()
-                }
-            ])
-            .then(function (answer) {
-                let mgmtId = selectMgmt().indexOf(answer.jobrole) + 1
-                connection.query("UPDATE employee SET WHERE ?", {
-                    id: pickedID
-                },
-                {
-                    role_id: answer.newRole
-                },
-                {
-                    manager_id: mgmtId
-                },
-                    function(err) {
-                        if (err) throw err
-                        printTable(answer)
-                        start()
-                    }
-                )
-            })
-    })
-}
+        console.log("\n\n ** Full Employee list ** \n");
+        printTable(res);
+    });
+};
 
-// function employeeInfo(firstName, lastName, department, role) {
-//     if (!(this instanceof employeeInfo)) {
-//         return new employeeInfo(firstName, lastName, department, role);
-//     }
-//     this.firstName = firstName
-//     this.lastName = lastName
-//     this.department = department
-//     this.role = role
-// }
+function displayAllRoles() {
+    let query = "SELECT * FROM jobrole ";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+
+        console.log("\n\n ** Full Role list ** \n");
+        printTable(res);
+    });
+};
+
+// // function for updating employee roles
+const updateEmployee = function () {
+    let employeeID;
+    displayAllEmployees();
+    inquirer.prompt({
+            type: "input",
+            name: 'employPicked',
+            message: 'Please enter the ID number of the employee you would like to update:',
+        })
+        .then((answer) => {
+            employeeID = answer.employPicked;
+            displayAllRoles();
+
+            inquirer.prompt({
+                    type: "input",
+                    name: "roleId",
+                    message: "Enter the role ID you want the user to have"
+                })
+                .then((answer) => {
+                    console.log("Updating employee role...\n");
+                    connection.query("UPDATE employee SET ? WHERE ? ",
+                        [{
+                            role_id: answer.roleId
+                        }, {
+                            id: employeeID,
+                        }, ],
+
+                        function (err) {
+                            if (err) throw err
+                            console.log("Employee role updated");
+                            // printTable(answer)
+                            start()
+
+                        })
+                })
+
+            // let lastNamePick = [];
+            // connection.query("SELECT employee.id, employee.first_name, employee.last_name, jobrole.title FROM employee JOIN jobrole ON employee.role_id = jobrole.id", function (err, res) {
+            //     if (err) throw err;
+
+            //     // for (let i = 0; i < res.length; i++) {
+            //     //     console.log(res[i].id + "Employee: " + res[i].first_name + " " + res[i].last_name + " | Title: " + res[i].role + "\n-----------------");
+            //     // }
+            //     inquirer.prompt([{
+            //                 type: 'rawlist',
+            //                 name: 'employPicked',
+            //                 message: 'Please enter the ID number of the employee you would like to update:',
+            //                 choices: function () {
+
+            //                     for (let i = 0; i < res.length; i++) {
+            //                         // console.log(res[i]);
+            //                         pickedName.push(res[i].first_name + " " + res[i].last_name);
+            //                         // lastNamePick.push(res[i].last_name);
+            //                     }
+            //                     return pickedName;
+
+            //                 }
+            //             },
+            //             {
+            //                 type: 'list',
+            //                 name: 'newRole',
+            //                 message: "What is the employee's new title?",
+            //                 choices: selectRole()
+            //             }
+            //             // ,
+            //             // {
+            //             //     type: "rawlist",
+            //             //     name: "mgmtChoice",
+            //             //     message: "What is their manager's name?",
+            //             //     choices: selectMgmt()
+            //             // }
+            //         ])
+            //         .then(function (answer) {
+            //             console.log(answer.employPicked);
+            //             console.log(answer.newRole);
+            //             // console.log(answer.mgmtChoice);
+            //             // let mgmtId = selectMgmt().indexOf(answer.employPicked) + 1
+            //             // console.log(mgmtID);
+            //             connection.query("UPDATE employee SET ? WHERE ? ", {
+            //                     role_id: answer.newRole
+            //                 }, {
+            //                     last_name: answer.employPicked
+            //                 },
+            //                 function (err) {
+            //                     if (err) throw err
+            //                     printTable(answer)
+            //                     start()
+            //                 })
+            //         });
+            // });
+        })
+}
