@@ -40,6 +40,7 @@ const start = function () {
             "ADD AN EMPLOYEE",
             "VIEW ALL EMPLOYEES",
             "UPDATE AN EMPLOYEE",
+            "ADD A DEPARTMENT",
             "EXIT APPLICATION"
         ]
     }]).then((answer) => {
@@ -57,6 +58,10 @@ const start = function () {
                 updateEmployee();
                 break;
 
+            case "ADD A DEPARTMENT":
+                addDepartment();
+                break;
+
             case "EXIT APPLICATION":
                 connection.end();
                 break;
@@ -71,6 +76,7 @@ const start = function () {
 
 // Selecting Role title for add employee 
 let roleArr = [];
+
 function selectRole() {
     connection.query("SELECT * FROM jobrole", function (err, res) {
         if (err) throw err
@@ -82,6 +88,7 @@ function selectRole() {
 }
 // Selecting manager for adding to employee
 let mgmtArray = [];
+
 function selectMgmt() {
     connection.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", function (err, res) {
         if (err) throw err
@@ -209,3 +216,24 @@ const updateEmployee = function () {
         })
 };
 
+function addDepartment() {
+    inquirer.prompt({
+            type: "input",
+            name: "departName",
+            message: "What is the department name?"
+        })
+        .then((answer) => {
+            console.log("Adding a new department ... \n");
+            connection.query(
+                'INSERT INTO department SET ?', {
+                    department: answer.departName,
+                },
+                function (err, res) {
+                    if (err) throw err;
+                    console.log("New Department added!\n");
+                    start();
+
+                }
+            )
+        })
+}
